@@ -113,7 +113,7 @@ int main() {
 
 
 	// Copy data to the device
-	cout << "Step3 : Copy Data To Device \n";
+	cout << "Step4 : Copy Data To Device \n";
 	cudaMemcpy(d_a, h_a.data(), bytes, cudaMemcpyHostToDevice);
 	cudaMemcpy(d_b, h_b.data(), bytes, cudaMemcpyHostToDevice);
 
@@ -128,6 +128,8 @@ int main() {
 	// Use dim3 structs for block  and grid dimensions
 	dim3 threads(THREADS, THREADS);
 	dim3 blocks(BLOCKS, BLOCKS);
+
+	cout << "Running matrixMulYrow...\n";
 
 	// Launch kernel
 	matrixMulYrow << <blocks, threads >> > (d_a, d_b, d_c, N);

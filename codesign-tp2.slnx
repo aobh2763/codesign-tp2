@@ -2,5 +2,6 @@
   <Configurations>
     <Platform Name="x64" />
   </Configurations>
-  <Project Path="codesign-tp2/codesign-tp2.vcxproj" />
+  <Project Path="part1-1/part1-1.vcxproj" Id="6c121a65-1757-f0a1-f19e-7117958b4e80" />
+  <Project Path="part1-2/part1-2.vcxproj" />
 </Solution>
