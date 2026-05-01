@@ -1,0 +1,6 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="codesign-tp2/codesign-tp2.vcxproj" />
+</Solution>
