@@ -129,7 +129,7 @@ int main() {
 	dim3 threads(THREADS, THREADS);
 	dim3 blocks(BLOCKS, BLOCKS);
 
-	cout << "Running matrixMulWrow...\n";
+	cout << "Running matrixMulYrow...\n";
 
 	// Launch kernel
 	matrixMulYrow << <blocks, threads >> > (d_a, d_b, d_c, N);
