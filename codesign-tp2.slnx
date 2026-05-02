@@ -6,4 +6,5 @@
   <Project Path="part1-2/part1-2.vcxproj" />
   <Project Path="part2-1/part2-1.vcxproj" />
   <Project Path="part2-2/part2-2.vcxproj" />
+  <Project Path="part3-1/part3-1.vcxproj" />
 </Solution>
