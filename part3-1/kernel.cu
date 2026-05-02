@@ -45,17 +45,26 @@ __global__ void sumReductionNaive(float* input, float* output, int n) {
     }
 }
 
+__global__ void activationFunction(float* input, float* output, int n) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (idx < n) {
+        output[idx] = 1.0f / (1.0f + expf(-input[idx]));
+	}
+}
+
 int main() {
     int N = 8192;
     size_t bytes = N * sizeof(float);
 
     vector<float> h_a(N);
-    generate(h_a.begin(), h_a.end(), []() { return static_cast<float>(rand() % 100); });
+    generate(h_a.begin(), h_a.end(), []() { return static_cast<float>((rand() % 100 - 50) / 100.0f); });
 
     float h_final_result = 0.0f;
-    float *d_a, *d_r;
+    float *d_a, *d_r, *d_r2;
     cudaMalloc(&d_a, bytes);
     cudaMalloc(&d_r, sizeof(float));
+	cudaMalloc(&d_r2, sizeof(float));
 
     cudaMemset(d_r, 0, sizeof(float));
 
@@ -78,10 +87,11 @@ int main() {
 
     // Launch 1D grid and 1D block
     sumReductionNaive << <BLOCKS, THREADS >> > (d_a, d_r, N);
+	activationFunction << <1, 1 >> > (d_r, d_r2, 1);
 
     cudaEventRecord(KernelExec, 0);
 
-	cudaMemcpy(&h_final_result, d_r, sizeof(float), cudaMemcpyDeviceToHost);
+	cudaMemcpy(&h_final_result, d_r2, sizeof(float), cudaMemcpyDeviceToHost);
 
     cudaEventRecord(stop, 0);
     cudaEventSynchronize(stop);
@@ -101,6 +111,8 @@ int main() {
     for (const auto& val : h_a) {
         expectedSum += val;
 	}
+	expectedSum = 1.0f / (1.0f + expf(-expectedSum));
+
 	printf("Expected Sum Result: %f\n", expectedSum);
     printf("Final Sum Result: %f\n", h_final_result);
 
