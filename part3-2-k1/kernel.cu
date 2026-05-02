@@ -34,7 +34,7 @@ __global__ void reducebase0(T* g_idata, T* g_odata, size_t size) {
 
 int main() {
     // Array size
-    int N = 8192;
+    int N = 8192*256;
     const size_t blockSize = 256;
     size_t bytes = N * sizeof(float);
 

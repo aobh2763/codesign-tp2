@@ -12,29 +12,58 @@ using std::generate;
 using std::vector;
 
 // Kernel definition as provided
-template <size_t blockSize, typename T>
-__global__ void reducebase0(T* g_idata, T* g_odata, size_t size) {
-    __shared__ T sdata[blockSize];
-    unsigned int tid = threadIdx.x;
-    unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+template <unsigned int blockSize, typename T>
+__device__ void warpReduce6(volatile T* cache, unsigned int tid) {
+    if (blockSize >= 64) cache[tid] += cache[tid + 32];
+    if (blockSize >= 32) cache[tid] += cache[tid + 16];
+    if (blockSize >= 16) cache[tid] += cache[tid + 8];
+    if (blockSize >= 8) cache[tid] += cache[tid + 4];
+    if (blockSize >= 4) cache[tid] += cache[tid + 2];
+    if (blockSize >= 2) cache[tid] += cache[tid + 1];
+}
 
+template <size_t blockSize, typename T>
+__global__ void reducebase5(T* g_idata, T* g_odata, size_t size) {
+    __shared__ float sdata[blockSize];
+
+    // each thread loads one element from global to shared mem
+    unsigned int tid = threadIdx.x;
+    unsigned int i = blockIdx.x * (blockDim.x * 2) + threadIdx.x;
     sdata[tid] = 0;
-    if (i < size) sdata[tid] = g_idata[i];
+
+    T adder = i + blockDim.x < size ? g_idata[i + blockDim.x] : 0;
+
+    if (i < size) sdata[tid] = g_idata[i] + adder;
     __syncthreads();
 
-    for (unsigned int s = 1; s < blockDim.x; s *= 2) {
-        if (tid % (2 * s) == 0) {
-            sdata[tid] += sdata[tid + s];
+    // do reduction in shared mem
+    if (blockSize >= 512) {
+        if (tid < 256) {
+            sdata[tid] += sdata[tid + 256];
         }
         __syncthreads();
     }
+    if (blockSize >= 256) {
+        if (tid < 128) {
+            sdata[tid] += sdata[tid + 128];
+        }
+        __syncthreads();
+    }
+    if (blockSize >= 128) {
+        if (tid < 64) {
+            sdata[tid] += sdata[tid + 64];
+        }
+        __syncthreads();
+    }
+    if (tid < 32) warpReduce6<blockSize>(sdata, tid);
 
+    // write result for this block to global mem
     if (tid == 0) g_odata[blockIdx.x] = sdata[0];
 }
 
 int main() {
     // Array size
-    int N = 8192;
+    int N = 8192 * 256;
     const size_t blockSize = 256;
     size_t bytes = N * sizeof(float);
 
@@ -72,7 +101,7 @@ int main() {
         // Calculate number of blocks needed
         int grid_size = (current_n + blockSize - 1) / blockSize;
 
-        reducebase0<blockSize, float> << <grid_size, blockSize >> > (d_in, d_out, current_n);
+        reducebase5<blockSize, float> << <grid_size, blockSize >> > (d_in, d_out, current_n);
 
         // After one pass, the output of this pass becomes the input for the next
         cudaMemcpy(d_in, d_out, grid_size * sizeof(float), cudaMemcpyDeviceToDevice);

@@ -13,7 +13,6 @@ using std::cout;
 using std::generate;
 using std::vector;
 
-// Kernel stays exactly as provided
 __global__ void sumReductionNaive(float* input, float* output, int n) {
 	// Shared memory for block-level reduction
     __shared__ float sharedData[256]; // Assuming block size <= 256

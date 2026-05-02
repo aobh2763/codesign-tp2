@@ -13,28 +13,33 @@ using std::vector;
 
 // Kernel definition as provided
 template <size_t blockSize, typename T>
-__global__ void reducebase0(T* g_idata, T* g_odata, size_t size) {
-    __shared__ T sdata[blockSize];
+__global__ void reducebase1(T* g_idata, T* g_odata, size_t size) {
+    __shared__ float sdata[blockSize];
+
+    // each thread loads one element from global to shared mem
     unsigned int tid = threadIdx.x;
     unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
-
     sdata[tid] = 0;
+
     if (i < size) sdata[tid] = g_idata[i];
     __syncthreads();
 
+    // do reduction in shared mem
     for (unsigned int s = 1; s < blockDim.x; s *= 2) {
-        if (tid % (2 * s) == 0) {
-            sdata[tid] += sdata[tid + s];
+        int index = 2 * s * tid;
+        if (index < blockDim.x) {
+            sdata[index] += sdata[index + s];
         }
         __syncthreads();
     }
 
+    // write result for this block to global mem
     if (tid == 0) g_odata[blockIdx.x] = sdata[0];
 }
 
 int main() {
     // Array size
-    int N = 8192;
+    int N = 8192*256;
     const size_t blockSize = 256;
     size_t bytes = N * sizeof(float);
 
@@ -72,7 +77,7 @@ int main() {
         // Calculate number of blocks needed
         int grid_size = (current_n + blockSize - 1) / blockSize;
 
-        reducebase0<blockSize, float> << <grid_size, blockSize >> > (d_in, d_out, current_n);
+        reducebase1<blockSize, float> << <grid_size, blockSize >> > (d_in, d_out, current_n);
 
         // After one pass, the output of this pass becomes the input for the next
         cudaMemcpy(d_in, d_out, grid_size * sizeof(float), cudaMemcpyDeviceToDevice);
