@@ -6,18 +6,18 @@ N = 8192 * 256
 
 ### 1
 ```
-Time elapsed on Host To Device Transfer: 1.991968 ms.
-Time elapsed on Reduction Kernel(s): 0.849632 ms.
-Time elapsed on Device To Host Transfer: 0.081632 ms.
-Total Time: 2.923232 ms.
+Time elapsed on Host To Device Transfer: 1.847552 ms.
+Time elapsed on Reduction Kernel(s): 2.199296 ms.
+Time elapsed on Device To Host Transfer: 0.159968 ms.
+Total Time: 4.206816 ms.
 ```
 
 ### 2
 ```
-Time elapsed on Host To Device Transfer: 1.638688 ms.
-Time elapsed on Reduction Kernel(s): 0.831200 ms.
-Time elapsed on Device To Host Transfer: 0.904608 ms.
-Total Time: 3.374496 ms.
+Time elapsed Host To Device: 0.335872 ms
+Time elapsed Kernel Execution: 3.590368 ms
+Time elapsed Device To Host: 0.073344 ms
+Total Time: 3.999584 ms
 ```
 
 ## Kernel 2 : Interleaved addressing with bank conflicts
@@ -144,4 +144,13 @@ Time elapsed on Host To Device Transfer: 1.396416 ms.
 Time elapsed on Reduction Kernel(s): 0.614720 ms.
 Time elapsed on Device To Host Transfer: 0.051552 ms.
 Total Time: 2.062688 ms.
+```
+
+## Ultimate Kernel
+
+```
+Time elapsed on Host To Device Transfer: 0.948896 ms.
+Time elapsed on Reduction Kernel(s): 0.549216 ms.
+Time elapsed on Device To Host Transfer: 0.050112 ms.
+Total Time: 1.548224 ms.
 ```

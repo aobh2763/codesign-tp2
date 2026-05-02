@@ -2,7 +2,6 @@
   <Configurations>
     <Platform Name="x64" />
   </Configurations>
-  <Project Path="part-3-2-k3/part-3-2-k3.vcxproj" />
   <Project Path="part1-1/part1-1.vcxproj" Id="6c121a65-1757-f0a1-f19e-7117958b4e80" />
   <Project Path="part1-2/part1-2.vcxproj" />
   <Project Path="part2-1/part2-1.vcxproj" />
@@ -10,9 +9,11 @@
   <Project Path="part3-1/part3-1.vcxproj" />
   <Project Path="part3-2-k1/part3-2-k1.vcxproj" />
   <Project Path="part3-2-k2/part3-2-k2.vcxproj" />
+  <Project Path="part3-2-k3/part3-2-k3.vcxproj" Id="3a694896-4ec6-12c8-8137-331426049d59" />
   <Project Path="part3-2-k4/part3-2-k4.vcxproj" />
   <Project Path="part3-2-k5/part3-2-k5.vcxproj" />
   <Project Path="part3-2-k6/part3-2-k6.vcxproj" />
   <Project Path="part3-2-k7/part3-2-k7.vcxproj" />
   <Project Path="part3-2-k8/part3-2-k8.vcxproj" />
+  <Project Path="part3-2-ultimate-kernel/part3-2-ultimate-kernel.vcxproj" />
 </Solution>
